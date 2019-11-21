@@ -12,8 +12,10 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class Cliente {
-    public Cliente() {
+public class Cliente 
+{
+    public Cliente() 
+    {
         String cliente;
         Scanner scan = new Scanner(System.in);
         System.out.print("Cliente:");
@@ -23,72 +25,75 @@ public class Cliente {
 
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException 
+    {
         Cliente cl1 = new Cliente();
         Scanner menusc = new Scanner(System.in);
         int menu;
-        while (true) {
+        while (true) 
+        {
             System.out.println("1-Mover");
-            System.out.println("2-Modificar");
-            System.out.println("3-Deletar");
+            System.out.println("2-Deletar");
             System.out.println("0-Finalizar");
             menu = menusc.nextInt();
-            if (menu == 1) {
+            if (menu == 1) 
+            {
                 moveFile();
-            } else if (menu == 2) {
-                modifyFile();
-            } else if (menu == 3) {
+            }
+            else if (menu == 2) 
+            {
                 deleteFile();
-            } else if (menu == 0) {
+            } 
+            else if (menu == 0) 
+            {
                 return;
             }
         }
 
     }
 
-    public static void criarPasta(String cliente) {
-        try {
-            File pasta = new File("/home/aluno/Área de Trabalho/" + cliente);
+    public static void criarPasta(String cliente) 
+    {
+        try 
+        {
+            File pasta = new File("C:\\Users\\ferna\\Desktop\\Douglas\\Douglas" + cliente);
             pasta.mkdirs();
-        } catch (Exception ex) {
+        } catch (Exception ex) 
+        {
             JOptionPane.showMessageDialog(null, "Erro ao criar pasta");
             System.out.println(ex);
         }
     }
 
-    public static void moveFile(String cliente) throws IOException {
+    public static void moveFile(String cliente) throws IOException 
+    {
         Scanner scanarq = new Scanner(System.in);
         String arquivo;
-        System.out.println("Digite o caminho do arquivo que você deseja mover ao servidor");
+        System.out.println("Digite o caminho do arquivo que voce deseja mover ao servidor");
         arquivo = scanarq.nextLine();
-        Path pathFile = FileSystems.getDefault().getPath("", arquivo);
-        byte[] fileByte = Files.readAllBytes(pathFile);
-        FileOutputStream stream = new FileOutputStream("/home/aluno/Área de Trabalho/" + cliente);
+        File caminhoArquivo = new File(arquivo);
+        byte[] fileByte = new byte[(int) caminhoArquivo.length()];
+        FileInputStream stream = new FileInputStream(caminhoArquivo);
+        stream.read(fileByte);
+        FileOutputStream copy = new FileOutputStream(("C:\\Users\\ferna\\Desktop\\Douglas\\Douglas" + cliente + "\\" + caminhoArquivo.getName());
         try
         {
-            stream.write(fileByte);
+            stream.write(fileByte, 0, fileByte.length);
         }
         finally
         {
             stream.close();
         }
-
-    }
-
-    public static void modifyFile() throws IOException
-    {
-        Scanner scanarq = new Scanner(System.in);
-        String arquivo;
-        System.out.println("Digite o caminho do arquivo que você deseja modificar");
-        arquivo = scanarq.nextLine();
         
+
     }
+
 
     public static void deleteFile()
     {
         Scanner scanarq = new Scanner(System.in);
         String arquivo;
-        System.out.println("Digite o caminho do arquivo que você deseja excluir");
+        System.out.println("Digite o caminho do arquivo que voce deseja excluir");
         arquivo = scanarq.nextLine();
     }
 }
