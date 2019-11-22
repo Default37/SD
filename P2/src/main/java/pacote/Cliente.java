@@ -22,12 +22,17 @@ import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
+import org.jgroups.JChannel;
+import org.jgroups.Message;
+import org.jgroups.ReceiverAdapter;
+import org.jgroups.View;
 
 public class Cliente 
 {
     private final WatchService watcher;
     private final Map<WatchKey, Path> keys;
     String cliente;
+    JChannel channel;
     public Cliente() throws IOException 
     {
         Scanner scan = new Scanner(System.in);
@@ -42,7 +47,7 @@ public class Cliente
 
     }
 
-    public static void main(String[] args) throws IOException 
+    public static void main(String[] args) throws Exception 
     {
         Cliente cl1 = new Cliente();
         cl1.processEvents();
@@ -74,6 +79,25 @@ public class Cliente
         }
     }
 
+    public void await() 
+    {
+        try 
+        {
+            channel = new JChannel();
+            channel.setName(cliente);
+            channel.connect("ClienteServidor");
+            channel.setReceiver(this);
+            processEvents();
+            channel.close();
+        } catch (Exception e) {
+        }
+    }
+
+    public void receive(Message msg) 
+    {
+        
+    }
+
     private void registerDirectory(Path dir) throws IOException 
     {
         WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
@@ -96,8 +120,10 @@ public class Cliente
  
     /**
      * Process all events for keys queued to the watcher
+     * 
+     * @throws Exception
      */
-    void processEvents() {
+    void processEvents() throws Exception {
         for (;;) {
  
             // wait for key to be signalled
@@ -132,6 +158,7 @@ public class Cliente
                         if (Files.isDirectory(child)) 
                         {
                             walkAndRegisterDirectories(child);
+                            criarPasta(String.valueOf(child));
                         }
                         else
                         {
@@ -139,6 +166,11 @@ public class Cliente
                             byte[] fileByte = new byte[(int) caminhoArquivo.length()];
                             FileInputStream stream = new FileInputStream(caminhoArquivo);
                             stream.read(fileByte);
+                            String[] aux2 = child.toString().split("Clientes/");
+                            FileX aux = new FileX(fileByte, aux2[1], false, 100);
+                            Message msg = new Message(null, aux);
+                            channel.send(msg);
+                            stream.close();
                         }
                     } catch (IOException x) {
                         // do something useful

@@ -35,6 +35,20 @@ public class Server extends ReceiverAdapter
         Server servidor = new Server();
         servidor.raise(name);
     }
+
+    public void raise(String name) 
+    {
+        try 
+        {
+            channel.setReceiver(this);
+        } catch (Exception e) {
+        }
+    }
+    
+    public void viewAccepted(View new_view) 
+    {
+        System.out.println("** view: " + new_view);
+    }
 }
 
 
