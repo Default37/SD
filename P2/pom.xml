@@ -16,6 +16,12 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jgroups/jgroups -->
+        <dependency>
+            <groupId>org.jgroups</groupId>
+            <artifactId>jgroups</artifactId>
+            <version>4.1.8.Final</version>
+        </dependency>
     </dependencies>
     <build>
         <pluginManagement>

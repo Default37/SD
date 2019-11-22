@@ -72,17 +72,6 @@ public class Cliente
         {
             stream.close();
         }
-        
-
-    }
-
-
-    public static void deleteFile()
-    {
-        Scanner scanarq = new Scanner(System.in);
-        String arquivo;
-        System.out.println("Digite o caminho do arquivo que voce deseja excluir");
-        arquivo = scanarq.nextLine();
     }
 
     private void registerDirectory(Path dir) throws IOException 
