@@ -27,7 +27,7 @@ import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
 import org.jgroups.View;
 
-public class Cliente 
+public class Cliente extends ReceiverAdapter
 {
     private final WatchService watcher;
     private final Map<WatchKey, Path> keys;
@@ -59,23 +59,11 @@ public class Cliente
         {
             File pasta = new File("/home/aluno/Área de Trabalho/" + cliente);
             pasta.mkdirs();
-        } catch (Exception ex) 
+        } 
+        catch (Exception ex) 
         {
             JOptionPane.showMessageDialog(null, "Erro ao criar pasta");
             System.out.println(ex);
-        }
-    }
-
-    public static void moveFile(String cliente) throws IOException 
-    {
-        FileOutputStream copy = new FileOutputStream(("/home/aluno/Área de Trabalho/douglas" + cliente + "\\" + caminhoArquivo.getName()));
-        try
-        {
-            copy.write(fileByte, 0, fileByte.length);
-        }
-        finally
-        {
-            stream.close();
         }
     }
 
@@ -85,17 +73,25 @@ public class Cliente
         {
             channel = new JChannel();
             channel.setName(cliente);
-            channel.connect("ClienteServidor");
+            channel.connect("Communication");
             channel.setReceiver(this);
             processEvents();
             channel.close();
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
+
         }
     }
 
     public void receive(Message msg) 
     {
         
+    }
+
+    public void viewAccepted(View new_view) 
+    {
+        System.out.println("** view: " + new_view);
     }
 
     private void registerDirectory(Path dir) throws IOException 
@@ -107,11 +103,14 @@ public class Cliente
     /**
      * Register the given directory, and all its sub-directories, with the WatchService.
      */
-    private void walkAndRegisterDirectories(final Path start) throws IOException {
+    private void walkAndRegisterDirectories(final Path start) throws IOException 
+    {
         // register directory and sub-directories
-        Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
+        Files.walkFileTree(start, new SimpleFileVisitor<Path>() 
+        {
             @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException 
+            {
                 registerDirectory(dir);
                 return FileVisitResult.CONTINUE;
             }
@@ -123,24 +122,30 @@ public class Cliente
      * 
      * @throws Exception
      */
-    void processEvents() throws Exception {
-        for (;;) {
- 
+    void processEvents() throws Exception 
+    {
+        for (;;) 
+        {
             // wait for key to be signalled
             WatchKey key;
-            try {
+            try 
+            {
                 key = watcher.take();
-            } catch (InterruptedException x) {
+            } 
+            catch (InterruptedException x) 
+            {
                 return;
             }
  
             Path dir = keys.get(key);
-            if (dir == null) {
+            if (dir == null) 
+            {
                 System.err.println("WatchKey not recognized!!");
                 continue;
             }
  
-            for (WatchEvent<?> event : key.pollEvents()) {
+            for (WatchEvent<?> event : key.pollEvents()) 
+            {
                 @SuppressWarnings("rawtypes")
                 WatchEvent.Kind kind = event.kind();
  
@@ -153,8 +158,10 @@ public class Cliente
                 System.out.format("%s: %s\n", event.kind().name(), child);
  
                 // if directory is created, and watching recursively, then register it and its sub-directories
-                if (kind == ENTRY_CREATE) {
-                    try {
+                if (kind == ENTRY_CREATE) 
+                {
+                    try 
+                    {
                         if (Files.isDirectory(child)) 
                         {
                             walkAndRegisterDirectories(child);
@@ -166,25 +173,33 @@ public class Cliente
                             byte[] fileByte = new byte[(int) caminhoArquivo.length()];
                             FileInputStream stream = new FileInputStream(caminhoArquivo);
                             stream.read(fileByte);
-                            String[] aux2 = child.toString().split("Clientes/");
-                            FileX aux = new FileX(fileByte, aux2[1], false, 100);
+                            FileX aux = new FileX(fileByte, child.toString(), false, 1);
                             Message msg = new Message(null, aux);
                             channel.send(msg);
                             stream.close();
                         }
-                    } catch (IOException x) {
+                    } 
+                    catch (IOException x) 
+                    {
                         // do something useful
                     }
+                }
+                else if (kind == ENTRY_DELETE)
+                {
+                    FileX aux = new FileX(null, child.toString(), false, 2);
+                    Message msg = new Message(null, aux);
+                    channel.send(msg);
                 }
             }
  
             // reset key and remove from set if directory no longer accessible
             boolean valid = key.reset();
-            if (!valid) {
+            if (!valid) 
+            {
                 keys.remove(key);
- 
                 // all directories are inaccessible
-                if (keys.isEmpty()) {
+                if (keys.isEmpty()) 
+                {
                     break;
                 }
             }
