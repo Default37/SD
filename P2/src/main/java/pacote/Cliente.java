@@ -75,6 +75,8 @@ public class Cliente extends ReceiverAdapter
             channel.setName(cliente);
             channel.connect("Communication");
             channel.setReceiver(this);
+            Message msg = new Message(null,"Cliente conectado");
+            channel.send(msg);
             processEvents();
             channel.close();
         } 
