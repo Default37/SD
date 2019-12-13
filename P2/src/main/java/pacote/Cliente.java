@@ -42,7 +42,8 @@ public class Cliente extends ReceiverAdapter
         criarPasta(cliente);
         this.watcher = FileSystems.getDefault().newWatchService();
         this.keys = new HashMap<WatchKey, Path>();
-        Path dir = Paths.get("/home/aluno/Área de Trabalho/" + cliente);
+        Path dir = Paths.get("/home/default/Documentos/SD/" + cliente );
+        scan.close();
         walkAndRegisterDirectories(dir);
 
     }
@@ -50,6 +51,7 @@ public class Cliente extends ReceiverAdapter
     public static void main(String[] args) throws Exception 
     {
         Cliente cl1 = new Cliente();
+        cl1.await();
         cl1.processEvents();
     }
 
@@ -57,7 +59,7 @@ public class Cliente extends ReceiverAdapter
     {
         try 
         {
-            File pasta = new File("/home/aluno/Área de Trabalho/" + cliente);
+            File pasta = new File("/home/default/Documentos/SD/" + cliente);
             pasta.mkdirs();
         } 
         catch (Exception ex) 

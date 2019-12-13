@@ -41,6 +41,8 @@ public class Server extends ReceiverAdapter
         if (msg.getObject() instanceof FileX)
         {
             FileX fileServer = msg.getObject();
+            System.out.println(fileServer.nome);
+            System.out.println("xxxxxxxxxxxxxxxxxxxxxxx");
             if (fileServer.codigo == 1)
             {
                 if (fileServer.diretorio == true)
@@ -75,7 +77,7 @@ public class Server extends ReceiverAdapter
                         byte[] fileByte = fileServer.arquivo;
                         outputStream.write(fileByte, 0, fileByte.length);
                         outputStream.close();
-                    } 
+                       } 
                     catch (FileNotFoundException e) 
                     {
                         // TODO Auto-generated catch block
@@ -83,6 +85,7 @@ public class Server extends ReceiverAdapter
                     } 
                     catch (IOException e) 
                     {
+                        
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
